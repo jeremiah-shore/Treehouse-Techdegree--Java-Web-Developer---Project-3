@@ -56,17 +56,40 @@ public class UserTest {
         assertEquals(15, otherUser.getReputation());
     }
 
-    @Test (expected = VotingException.class) //TODO: refactor to test the error message
-    public void votingNotAllowedOnQuestionsByAuthor() throws Exception {
-        //voting either up or down is not allowed on questions by the original author
+    @Test (expected = VotingException.class)
+    public void votingUpNotAllowedOnQuestionsByAuthor() throws Exception {
         user.upVote(question);
     }
 
-    @Test (expected = VotingException.class) //TODO: refactor to test the error message
-    public void votingNotAllowedOnQAnswersByAuthor() throws Exception {
-        //voting either up or down is not allowed on answers by the original author
+    @Test (expected = VotingException.class)
+    public void votingDownNotAllowedOnQuestionsByAuthor() throws Exception {
+        user.downVote(question);
+    }
+
+    @Test (expected = VotingException.class)
+    public void votingUpNotAllowedOnAnswersByAuthor() throws Exception {
         otherUser.upVote(answer);
     }
+
+    @Test (expected = VotingException.class)
+    public void votingDownNotAllowedOnAnswersByAuthor() throws Exception {
+        otherUser.downVote(answer);
+    }
+
+    /* The four tests above are very specific and explicitly state what is being tested. I find this to be preferable to
+       the consolidated code below, as the four separate tests explain what is not allowed more comprehensively.
+
+    @Test (expected = VotingException.class)
+    public void votingUpNotAllowedOnPostByAuthor() throws Exception {
+        user.upVote(question);
+    }
+
+    @Test (expected = VotingException.class)
+    public void votingDownNotAllowedOnPostByAuthor() throws Exception {
+        user.downVote(question);
+    }
+
+     */
 
     @Test
     public void onlyOriginalQuestionerCanAcceptAnAnswer() throws Exception {
@@ -77,5 +100,11 @@ public class UserTest {
         otherUser.acceptAnswer(answer);
     }
 
-    //todo: extra credit: Reviewing the User.getReputation method may expose some code that is not requested to be tested in the Meets Project instructions. Write the missing test.
+    @Test
+    public void havingAnswersDownVotedDecreasesVoterReputation() throws Exception {
+        user.acceptAnswer(answer); //increases rep for the answerer
+        user.downVote(answer); //should decrease answerer rep
+
+        assertEquals(14, otherUser.getReputation());
+    }
 }
